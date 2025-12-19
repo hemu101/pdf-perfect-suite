@@ -14,6 +14,254 @@ export type Database = {
   }
   public: {
     Tables: {
+      campaign_contacts: {
+        Row: {
+          campaign_id: string
+          clicked_at: string | null
+          contact_id: string
+          error_message: string | null
+          id: string
+          opened_at: string | null
+          sent_at: string | null
+          status: string | null
+        }
+        Insert: {
+          campaign_id: string
+          clicked_at?: string | null
+          contact_id: string
+          error_message?: string | null
+          id?: string
+          opened_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          clicked_at?: string | null
+          contact_id?: string
+          error_message?: string | null
+          id?: string
+          opened_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_contacts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_contacts_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          click_count: number | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          name: string
+          open_count: number | null
+          scheduled_at: string | null
+          sent_count: number | null
+          started_at: string | null
+          status: string | null
+          template_id: string | null
+          total_contacts: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          click_count?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          open_count?: number | null
+          scheduled_at?: string | null
+          sent_count?: number | null
+          started_at?: string | null
+          status?: string | null
+          template_id?: string | null
+          total_contacts?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          click_count?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          open_count?: number | null
+          scheduled_at?: string | null
+          sent_count?: number | null
+          started_at?: string | null
+          status?: string | null
+          template_id?: string | null
+          total_contacts?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          business_name: string | null
+          created_at: string
+          dm_sent: boolean | null
+          email: string | null
+          email_sent: boolean | null
+          first_name: string | null
+          id: string
+          instagram: string | null
+          last_name: string | null
+          phone: string | null
+          status: string | null
+          tiktok: string | null
+          updated_at: string
+          user_id: string
+          voicemail_sent: boolean | null
+        }
+        Insert: {
+          business_name?: string | null
+          created_at?: string
+          dm_sent?: boolean | null
+          email?: string | null
+          email_sent?: boolean | null
+          first_name?: string | null
+          id?: string
+          instagram?: string | null
+          last_name?: string | null
+          phone?: string | null
+          status?: string | null
+          tiktok?: string | null
+          updated_at?: string
+          user_id: string
+          voicemail_sent?: boolean | null
+        }
+        Update: {
+          business_name?: string | null
+          created_at?: string
+          dm_sent?: boolean | null
+          email?: string | null
+          email_sent?: boolean | null
+          first_name?: string | null
+          id?: string
+          instagram?: string | null
+          last_name?: string | null
+          phone?: string | null
+          status?: string | null
+          tiktok?: string | null
+          updated_at?: string
+          user_id?: string
+          voicemail_sent?: boolean | null
+        }
+        Relationships: []
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message: string | null
+          last_message_at: string | null
+          participant_ids: string[]
+          platform: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message?: string | null
+          last_message_at?: string | null
+          participant_ids: string[]
+          platform?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message?: string | null
+          last_message_at?: string | null
+          participant_ids?: string[]
+          platform?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      creators: {
+        Row: {
+          avatar: string | null
+          avg_likes: string | null
+          bio: string | null
+          category: string[] | null
+          created_at: string
+          engagement: string | null
+          followers: string | null
+          handle: string
+          id: string
+          location: string | null
+          name: string
+          platform: string | null
+          recent_post: string | null
+          updated_at: string
+          user_id: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          avatar?: string | null
+          avg_likes?: string | null
+          bio?: string | null
+          category?: string[] | null
+          created_at?: string
+          engagement?: string | null
+          followers?: string | null
+          handle: string
+          id?: string
+          location?: string | null
+          name: string
+          platform?: string | null
+          recent_post?: string | null
+          updated_at?: string
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          avatar?: string | null
+          avg_likes?: string | null
+          bio?: string | null
+          category?: string[] | null
+          created_at?: string
+          engagement?: string | null
+          followers?: string | null
+          handle?: string
+          id?: string
+          location?: string | null
+          name?: string
+          platform?: string | null
+          recent_post?: string | null
+          updated_at?: string
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
       credit_transactions: {
         Row: {
           amount: number
@@ -43,6 +291,79 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      email_events: {
+        Row: {
+          campaign_contact_id: string
+          created_at: string
+          event_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          campaign_contact_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          campaign_contact_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_events_campaign_contact_id_fkey"
+            columns: ["campaign_contact_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       processing_history: {
         Row: {
@@ -107,6 +428,68 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      saved_creators: {
+        Row: {
+          created_at: string
+          creator_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_creators_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      templates: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          name: string
+          subject: string | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          name: string
+          subject?: string | null
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          name?: string
+          subject?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

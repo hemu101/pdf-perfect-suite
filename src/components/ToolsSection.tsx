@@ -18,6 +18,7 @@ const ToolsSection = () => {
       edit: "bg-edit text-white hover:bg-edit",
       security: "bg-security text-foreground hover:bg-security",
       image: "bg-image text-white hover:bg-image",
+      spreadsheet: "bg-primary text-primary-foreground hover:bg-primary",
     };
     return colors[category];
   };
