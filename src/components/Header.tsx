@@ -116,6 +116,11 @@ const Header = () => {
                     <Workflow className="h-4 w-4" /> Workflows
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/admin" className="cursor-pointer gap-2">
+                    <Crown className="h-4 w-4" /> Admin Dashboard
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link to="/pricing" className="cursor-pointer gap-2 text-primary">

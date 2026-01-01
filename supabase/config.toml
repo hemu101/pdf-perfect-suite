@@ -2,3 +2,6 @@ project_id = "syqawvakxxfaohcgrenn"
 
 [functions.ai-spreadsheet]
 verify_jwt = false
+
+[functions.esewa-payment]
+verify_jwt = false
