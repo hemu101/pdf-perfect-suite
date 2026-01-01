@@ -124,6 +124,8 @@ export type Database = {
       contacts: {
         Row: {
           business_name: string | null
+          city: string | null
+          country: string | null
           created_at: string
           dm_sent: boolean | null
           email: string | null
@@ -131,8 +133,12 @@ export type Database = {
           first_name: string | null
           id: string
           instagram: string | null
+          job_title: string | null
           last_name: string | null
+          linkedin: string | null
+          location: string | null
           phone: string | null
+          state: string | null
           status: string | null
           tiktok: string | null
           updated_at: string
@@ -141,6 +147,8 @@ export type Database = {
         }
         Insert: {
           business_name?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           dm_sent?: boolean | null
           email?: string | null
@@ -148,8 +156,12 @@ export type Database = {
           first_name?: string | null
           id?: string
           instagram?: string | null
+          job_title?: string | null
           last_name?: string | null
+          linkedin?: string | null
+          location?: string | null
           phone?: string | null
+          state?: string | null
           status?: string | null
           tiktok?: string | null
           updated_at?: string
@@ -158,6 +170,8 @@ export type Database = {
         }
         Update: {
           business_name?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           dm_sent?: boolean | null
           email?: string | null
@@ -165,8 +179,12 @@ export type Database = {
           first_name?: string | null
           id?: string
           instagram?: string | null
+          job_title?: string | null
           last_name?: string | null
+          linkedin?: string | null
+          location?: string | null
           phone?: string | null
+          state?: string | null
           status?: string | null
           tiktok?: string | null
           updated_at?: string
@@ -330,6 +348,54 @@ export type Database = {
           },
         ]
       }
+      email_settings: {
+        Row: {
+          brevo_api_key: string | null
+          created_at: string
+          id: string
+          sendgrid_key: string | null
+          smtp_host: string | null
+          smtp_password: string | null
+          smtp_port: string | null
+          smtp_user: string | null
+          twilio_number: string | null
+          twilio_sid: string | null
+          twilio_token: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brevo_api_key?: string | null
+          created_at?: string
+          id?: string
+          sendgrid_key?: string | null
+          smtp_host?: string | null
+          smtp_password?: string | null
+          smtp_port?: string | null
+          smtp_user?: string | null
+          twilio_number?: string | null
+          twilio_sid?: string | null
+          twilio_token?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brevo_api_key?: string | null
+          created_at?: string
+          id?: string
+          sendgrid_key?: string | null
+          smtp_host?: string | null
+          smtp_password?: string | null
+          smtp_port?: string | null
+          smtp_user?: string | null
+          twilio_number?: string | null
+          twilio_sid?: string | null
+          twilio_token?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -361,6 +427,47 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio_items: {
+        Row: {
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          image_url: string
+          link: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          image_url: string
+          link?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          link?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
             referencedColumns: ["id"]
           },
         ]
