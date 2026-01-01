@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAdmin } from "@/hooks/useAdmin";
 
 const plans = [
   {
@@ -10,23 +13,27 @@ const plans = [
     price: "$0",
     period: "forever",
     description: "Perfect for occasional use",
+    credits: "300 free credits",
     features: [
-      "5 free tasks per day",
+      "300 free credits to start",
       "Basic PDF tools",
       "Standard processing speed",
       "File size limit: 15MB",
       "Community support",
     ],
     cta: "Get Started",
+    planId: "free",
     popular: false,
   },
   {
     name: "Pro",
     price: "$9",
+    priceNPR: "रू 1,200",
     period: "per month",
     description: "For power users and professionals",
+    credits: "5,000 credits/month",
     features: [
-      "Unlimited tasks",
+      "5,000 credits per month",
       "All PDF & Image tools",
       "Priority processing",
       "File size limit: 100MB",
@@ -35,14 +42,18 @@ const plans = [
       "No watermarks",
     ],
     cta: "Start Free Trial",
+    planId: "pro",
     popular: true,
   },
   {
     name: "Business",
     price: "$29",
+    priceNPR: "रू 3,900",
     period: "per month",
     description: "For teams and organizations",
+    credits: "20,000 credits/month",
     features: [
+      "20,000 credits per month",
       "Everything in Pro",
       "5 team members",
       "File size limit: 500MB",
@@ -52,7 +63,8 @@ const plans = [
       "SSO integration",
       "Analytics dashboard",
     ],
-    cta: "Contact Sales",
+    cta: "Start Free Trial",
+    planId: "business",
     popular: false,
   },
 ];
@@ -73,10 +85,38 @@ const creditPricing = [
 ];
 
 const PricingPage = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isAdmin } = useAdmin();
+
+  const handlePlanClick = (planId: string) => {
+    if (planId === "free") {
+      navigate("/tools");
+    } else {
+      if (!user) {
+        navigate("/auth");
+      } else {
+        navigate(`/payment?plan=${planId}`);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
+        {/* Admin Badge */}
+        {isAdmin && (
+          <div className="bg-primary/10 border border-primary/20 py-3">
+            <div className="container">
+              <div className="flex items-center justify-center gap-2 text-primary">
+                <Crown className="h-5 w-5" />
+                <span className="font-medium">Admin Account - Unlimited access to all features without credits</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Hero */}
         <section className="py-16 md:py-24 bg-gradient-hero">
           <div className="container">
@@ -89,8 +129,7 @@ const PricingPage = () => {
                 Choose the right plan for you
               </h1>
               <p className="text-lg text-muted-foreground">
-                Start for free and upgrade as you grow. No hidden fees, no
-                surprises.
+                Start with 300 free credits. No hidden fees, no surprises.
               </p>
             </div>
           </div>
@@ -151,6 +190,7 @@ const PricingPage = () => {
                     variant={plan.popular ? "hero" : "outline"}
                     size="lg"
                     className="w-full"
+                    onClick={() => handlePlanClick(plan.planId)}
                   >
                     {plan.cta}
                   </Button>
