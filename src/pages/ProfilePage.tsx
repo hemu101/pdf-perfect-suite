@@ -119,12 +119,19 @@ const ProfilePage = () => {
 
                   {/* Credits Badge */}
                   <div className="mb-6 p-3 bg-primary/10 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Credits</span>
-                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                        {creditsLoading ? "..." : credits?.balance ?? 0}
-                      </Badge>
-                    </div>
+                    {credits?.isAdmin ? (
+                      <div className="flex items-center gap-2">
+                        <Crown className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">Admin - Unlimited</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Credits</span>
+                        <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                          {creditsLoading ? "..." : credits?.balance ?? 0}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
 
                   <Separator className="mb-4" />

@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 interface Credits {
   balance: number;
   totalPurchased: number;
+  isAdmin: boolean;
 }
 
 interface Transaction {
@@ -36,6 +37,16 @@ export const useCredits = () => {
   const fetchCredits = async () => {
     if (!user) return;
     
+    // Check if user is admin
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    
+    const isAdmin = !!roleData;
+    
     const { data, error } = await supabase
       .from("user_credits")
       .select("balance, total_purchased")
@@ -44,8 +55,16 @@ export const useCredits = () => {
 
     if (!error && data) {
       setCredits({
-        balance: data.balance,
-        totalPurchased: data.total_purchased
+        balance: isAdmin ? Infinity : data.balance,
+        totalPurchased: data.total_purchased,
+        isAdmin
+      });
+    } else if (isAdmin) {
+      // Admin might not have credits record yet
+      setCredits({
+        balance: Infinity,
+        totalPurchased: 0,
+        isAdmin: true
       });
     }
     setLoading(false);

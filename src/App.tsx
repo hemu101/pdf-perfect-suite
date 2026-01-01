@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import ToolsPage from "./pages/ToolsPage";
 import ToolPage from "./pages/ToolPage";
 import PricingPage from "./pages/PricingPage";
+import PaymentPage from "./pages/PaymentPage";
 import AuthPage from "./pages/AuthPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/tools" element={<ToolsPage />} />
             <Route path="/tool/:toolId" element={<ToolPage />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/payment" element={<PaymentPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<NotFound />} />
