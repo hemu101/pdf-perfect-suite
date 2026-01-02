@@ -1,14 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { CreditCard, Wallet, ArrowLeft, Shield, Check } from "lucide-react";
+import { CreditCard, Wallet, ArrowLeft, Shield, Check, Loader2 } from "lucide-react";
 
 const plans = {
   pro: {
@@ -44,16 +42,38 @@ const plans = {
   },
 };
 
+const ESEWA_PAYMENT_URL = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
+
 const PaymentPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"esewa" | "wallet" | null>(null);
-  const [esewaId, setEsewaId] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const [paymentFormData, setPaymentFormData] = useState<Record<string, string> | null>(null);
   
   const planId = searchParams.get("plan") as "pro" | "business";
   const plan = planId ? plans[planId] : null;
+  const paymentError = searchParams.get("error");
+
+  // Handle payment error from callback
+  useEffect(() => {
+    if (paymentError === "failed") {
+      toast({
+        title: "Payment Failed",
+        description: "Your payment was not completed. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [paymentError]);
+
+  // Auto-submit form when payment data is ready
+  useEffect(() => {
+    if (paymentFormData && formRef.current) {
+      formRef.current.submit();
+    }
+  }, [paymentFormData]);
 
   if (!plan) {
     return (
@@ -88,66 +108,50 @@ const PaymentPage = () => {
   }
 
   const handleEsewaPayment = async () => {
-    if (!esewaId.trim()) {
-      toast({
-        title: "eSewa ID Required",
-        description: "Please enter your eSewa ID or phone number",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
     try {
-      // Create subscription record
-      const expiresAt = new Date();
-      expiresAt.setMonth(expiresAt.getMonth() + 1);
-
-      const { error } = await supabase.from("subscriptions").insert({
-        user_id: user.id,
-        plan: planId,
-        status: "pending",
-        payment_method: "esewa",
-        payment_reference: esewaId,
-        amount: plan.priceNPR,
-        currency: "NPR",
-        expires_at: expiresAt.toISOString(),
+      // Get the current site URL for callbacks
+      const siteUrl = window.location.origin;
+      
+      // Call the edge function to initiate payment
+      const { data, error } = await supabase.functions.invoke("esewa-payment/initiate", {
+        body: {
+          amount: plan.priceNPR,
+          productId: `${planId}-subscription-${Date.now()}`,
+          productName: `${plan.name} Plan Subscription`,
+          userId: user.id,
+          plan: planId,
+          successUrl: `https://syqawvakxxfaohcgrenn.supabase.co/functions/v1/esewa-payment/callback`,
+          failureUrl: `${siteUrl}/payment?plan=${planId}&error=failed`,
+        },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw new Error(error.message || "Failed to initiate payment");
+      }
 
-      // In production, redirect to eSewa payment gateway
-      // For demo, simulate successful payment
+      if (!data?.success || !data?.paymentData) {
+        throw new Error("Invalid response from payment service");
+      }
+
+      console.log("Payment initiated, redirecting to eSewa...", data);
+
+      // Set the form data to trigger submission
+      setPaymentFormData(data.paymentData);
+
       toast({
-        title: "Payment Initiated",
-        description: "You will be redirected to eSewa to complete payment. For demo purposes, your subscription is now active.",
+        title: "Redirecting to eSewa",
+        description: "Please complete your payment on the eSewa portal.",
       });
 
-      // Update subscription to active (demo mode)
-      await supabase
-        .from("subscriptions")
-        .update({ status: "active" })
-        .eq("user_id", user.id)
-        .eq("plan", planId);
-
-      // Add credits for the plan
-      const creditsToAdd = planId === "pro" ? 5000 : 20000;
-      await supabase
-        .from("user_credits")
-        .update({ 
-          balance: creditsToAdd,
-          total_purchased: creditsToAdd 
-        })
-        .eq("user_id", user.id);
-
-      navigate("/profile");
     } catch (error: any) {
+      console.error("Payment error:", error);
       toast({
         title: "Payment Failed",
-        description: error.message,
+        description: error.message || "Failed to initiate payment. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
@@ -246,12 +250,12 @@ const PaymentPage = () => {
               <div className="space-y-4">
                 {/* eSewa Option */}
                 <div
-                  onClick={() => setPaymentMethod("esewa")}
+                  onClick={() => !loading && setPaymentMethod("esewa")}
                   className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
                     paymentMethod === "esewa"
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/50"
-                  }`}
+                  } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
@@ -265,23 +269,25 @@ const PaymentPage = () => {
 
                   {paymentMethod === "esewa" && (
                     <div className="mt-4 space-y-4">
-                      <div>
-                        <Label htmlFor="esewa-id">eSewa ID / Phone Number</Label>
-                        <Input
-                          id="esewa-id"
-                          placeholder="98XXXXXXXX"
-                          value={esewaId}
-                          onChange={(e) => setEsewaId(e.target.value)}
-                          className="mt-1"
-                        />
-                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        You will be redirected to eSewa's secure payment portal to complete your transaction.
+                      </p>
                       <Button
                         onClick={handleEsewaPayment}
                         disabled={loading}
                         className="w-full bg-green-500 hover:bg-green-600"
                       >
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        {loading ? "Processing..." : `Pay रू ${plan.priceNPR}`}
+                        {loading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Redirecting to eSewa...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="h-4 w-4 mr-2" />
+                            Pay रू {plan.priceNPR} with eSewa
+                          </>
+                        )}
                       </Button>
                     </div>
                   )}
@@ -289,12 +295,12 @@ const PaymentPage = () => {
 
                 {/* Wallet Option */}
                 <div
-                  onClick={() => setPaymentMethod("wallet")}
+                  onClick={() => !loading && setPaymentMethod("wallet")}
                   className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
                     paymentMethod === "wallet"
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/50"
-                  }`}
+                  } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
@@ -332,6 +338,20 @@ const PaymentPage = () => {
         </div>
       </main>
       <Footer />
+
+      {/* Hidden eSewa Payment Form */}
+      {paymentFormData && (
+        <form
+          ref={formRef}
+          action={ESEWA_PAYMENT_URL}
+          method="POST"
+          style={{ display: "none" }}
+        >
+          {Object.entries(paymentFormData).map(([key, value]) => (
+            <input key={key} type="hidden" name={key} value={value} />
+          ))}
+        </form>
+      )}
     </div>
   );
 };
