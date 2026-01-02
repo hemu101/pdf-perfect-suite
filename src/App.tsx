@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import DocumentationPage from "./pages/DocumentationPage";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/docs" element={<DocumentationPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
