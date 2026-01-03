@@ -72,6 +72,12 @@ const Header = () => {
               Pricing
             </Button>
           </Link>
+
+          <Link to="/docs">
+            <Button variant="ghost" className={location.pathname === "/docs" ? "bg-secondary" : ""}>
+              Docs
+            </Button>
+          </Link>
         </nav>
 
         {/* Desktop CTA / User Menu */}
@@ -165,6 +171,9 @@ const Header = () => {
             ))}
             <Link to="/pricing" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">Pricing</Button>
+            </Link>
+            <Link to="/docs" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">Documentation</Button>
             </Link>
             <div className="pt-4 border-t border-border flex flex-col gap-2">
               {user ? (
