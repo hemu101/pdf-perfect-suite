@@ -16,10 +16,10 @@ const Footer = () => {
       { name: "Convert PDF", href: "/tools?category=convert-from" },
     ],
     resources: [
+      { name: "Documentation", href: "/docs" },
+      { name: "API Reference", href: "/docs#api" },
       { name: "Desktop App", href: "#" },
       { name: "Mobile App", href: "#" },
-      { name: "API", href: "#" },
-      { name: "Blog", href: "#" },
     ],
     company: [
       { name: "About Us", href: "#" },

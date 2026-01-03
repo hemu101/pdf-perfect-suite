@@ -14,11 +14,27 @@ import {
   Image,
   Zap,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
+  Code,
+  Terminal,
+  Key,
+  Globe,
+  BookOpen
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState as useReactState } from "react";
 
 const DocumentationPage = () => {
   const [downloading, setDownloading] = useState(false);
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useReactState("overview");
+
+  useEffect(() => {
+    if (location.hash === "#api") {
+      setActiveTab("api");
+    }
+  }, [location]);
 
   const generatePDFContent = () => {
     return `
@@ -286,8 +302,8 @@ Documentation version: 1.0
           </div>
 
           {/* Quick Links */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-            <Card className="hover:border-primary transition-colors cursor-pointer">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
+            <Card className="hover:border-primary transition-colors cursor-pointer" onClick={() => setActiveTab("overview")}>
               <CardContent className="p-4 flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Shield className="h-5 w-5 text-primary" />
@@ -298,7 +314,7 @@ Documentation version: 1.0
                 </div>
               </CardContent>
             </Card>
-            <Card className="hover:border-primary transition-colors cursor-pointer">
+            <Card className="hover:border-primary transition-colors cursor-pointer" onClick={() => setActiveTab("overview")}>
               <CardContent className="p-4 flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <CreditCard className="h-5 w-5 text-primary" />
@@ -309,7 +325,7 @@ Documentation version: 1.0
                 </div>
               </CardContent>
             </Card>
-            <Card className="hover:border-primary transition-colors cursor-pointer">
+            <Card className="hover:border-primary transition-colors cursor-pointer" onClick={() => setActiveTab("overview")}>
               <CardContent className="p-4 flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Zap className="h-5 w-5 text-primary" />
@@ -320,7 +336,7 @@ Documentation version: 1.0
                 </div>
               </CardContent>
             </Card>
-            <Card className="hover:border-primary transition-colors cursor-pointer">
+            <Card className="hover:border-primary transition-colors cursor-pointer" onClick={() => setActiveTab("overview")}>
               <CardContent className="p-4 flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Settings className="h-5 w-5 text-primary" />
@@ -331,8 +347,31 @@ Documentation version: 1.0
                 </div>
               </CardContent>
             </Card>
+            <Card className="hover:border-primary transition-colors cursor-pointer" onClick={() => setActiveTab("api")}>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Code className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground">API Docs</p>
+                  <p className="text-sm text-muted-foreground">Developer guide</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
+          {/* Tabs for Overview and API */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+              <TabsTrigger value="overview" className="gap-2">
+                <BookOpen className="h-4 w-4" /> Overview
+              </TabsTrigger>
+              <TabsTrigger value="api" className="gap-2">
+                <Code className="h-4 w-4" /> API Reference
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-8">
           {/* Admin Setup */}
           <Card className="mb-8">
             <CardHeader>
@@ -527,7 +566,7 @@ WHERE user_id = 'YOUR-USER-ID-HERE';`}
                 <div>
                   <h4 className="font-semibold mb-3">Public Routes</h4>
                   <div className="space-y-2 text-sm">
-                    {["/", "/tools", "/tools/:id", "/pricing", "/auth"].map((route) => (
+                    {["/", "/tools", "/tools/:id", "/pricing", "/auth", "/docs"].map((route) => (
                       <div key={route} className="flex items-center gap-2">
                         <Badge variant="outline" className="font-mono">{route}</Badge>
                       </div>
@@ -555,6 +594,351 @@ WHERE user_id = 'YOUR-USER-ID-HERE';`}
               </div>
             </CardContent>
           </Card>
+            </TabsContent>
+
+            {/* API Documentation Tab */}
+            <TabsContent value="api" className="space-y-8" id="api">
+              {/* API Overview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="h-5 w-5 text-primary" />
+                    API Overview
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-muted-foreground">
+                    The PDFTools API allows developers to integrate document processing capabilities into their applications.
+                    All API requests require authentication using an API key.
+                  </p>
+                  <div className="bg-muted rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Base URL</h4>
+                    <code className="bg-background px-3 py-2 rounded block text-sm">
+                      https://your-project.supabase.co/functions/v1
+                    </code>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="bg-muted rounded-lg p-4">
+                      <h4 className="font-semibold mb-2">Authentication</h4>
+                      <p className="text-sm text-muted-foreground mb-2">Include your API key in the request headers:</p>
+                      <code className="bg-background px-2 py-1 rounded text-sm block">
+                        Authorization: Bearer YOUR_API_KEY
+                      </code>
+                    </div>
+                    <div className="bg-muted rounded-lg p-4">
+                      <h4 className="font-semibold mb-2">Rate Limits</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Free: 100 requests/day<br />
+                        Pro: 5,000 requests/day<br />
+                        Business: Unlimited
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Authentication */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Key className="h-5 w-5 text-primary" />
+                    Authentication
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="bg-muted rounded-lg p-4">
+                    <h4 className="font-semibold mb-2">Getting Your API Key</h4>
+                    <ol className="list-decimal list-inside text-sm text-muted-foreground space-y-1">
+                      <li>Log in to your account at /profile</li>
+                      <li>Navigate to the API section</li>
+                      <li>Click "Generate API Key"</li>
+                      <li>Copy and store your key securely</li>
+                    </ol>
+                  </div>
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+                    <h4 className="font-semibold text-yellow-600 mb-2">Security Notice</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Never expose your API key in client-side code. Always use server-side requests or environment variables.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* API Endpoints */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Terminal className="h-5 w-5 text-primary" />
+                    API Endpoints
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* AI Spreadsheet Endpoint */}
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    <div className="bg-muted px-4 py-2 flex items-center gap-3">
+                      <Badge className="bg-green-500">POST</Badge>
+                      <code className="text-sm">/ai-spreadsheet</code>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        Process spreadsheet data with AI-powered analysis and transformations.
+                      </p>
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Request Body</h5>
+                        <pre className="bg-muted p-3 rounded text-sm overflow-x-auto">
+{`{
+  "prompt": "Analyze sales trends",
+  "data": [
+    ["Product", "Sales", "Month"],
+    ["Widget A", 150, "January"],
+    ["Widget B", 200, "January"]
+  ]
+}`}
+                        </pre>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Response</h5>
+                        <pre className="bg-muted p-3 rounded text-sm overflow-x-auto">
+{`{
+  "success": true,
+  "result": "Based on the data, Widget B shows 33% higher sales..."
+}`}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* eSewa Payment Endpoint */}
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    <div className="bg-muted px-4 py-2 flex items-center gap-3">
+                      <Badge className="bg-green-500">POST</Badge>
+                      <code className="text-sm">/esewa-payment</code>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        Initialize eSewa payment for subscription purchases.
+                      </p>
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Request Body</h5>
+                        <pre className="bg-muted p-3 rounded text-sm overflow-x-auto">
+{`{
+  "amount": 1200,
+  "plan": "pro",
+  "user_id": "uuid-here"
+}`}
+                        </pre>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Response</h5>
+                        <pre className="bg-muted p-3 rounded text-sm overflow-x-auto">
+{`{
+  "success": true,
+  "payment_url": "https://esewa.com.np/epay/...",
+  "transaction_id": "TXN123456"
+}`}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Credits Deduction */}
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    <div className="bg-muted px-4 py-2 flex items-center gap-3">
+                      <Badge className="bg-blue-500">RPC</Badge>
+                      <code className="text-sm">deduct_credits</code>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        Deduct credits from a user account (admin bypass available).
+                      </p>
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Parameters</h5>
+                        <pre className="bg-muted p-3 rounded text-sm overflow-x-auto">
+{`{
+  "p_user_id": "user-uuid",
+  "p_amount": 10,
+  "p_description": "PDF merge operation",
+  "p_tool": "merge-pdf"
+}`}
+                        </pre>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Returns</h5>
+                        <code className="bg-muted px-2 py-1 rounded text-sm">boolean</code>
+                        <span className="text-sm text-muted-foreground ml-2">- true if successful</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Code Examples */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Code className="h-5 w-5 text-primary" />
+                    Code Examples
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* JavaScript Example */}
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Badge variant="outline">JavaScript</Badge>
+                    </h4>
+                    <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto">
+{`// Initialize Supabase client
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  'YOUR_SUPABASE_URL',
+  'YOUR_SUPABASE_ANON_KEY'
+)
+
+// Call AI Spreadsheet function
+const { data, error } = await supabase.functions.invoke('ai-spreadsheet', {
+  body: {
+    prompt: 'Summarize the data',
+    data: [['Name', 'Value'], ['Item 1', 100]]
+  }
+})
+
+if (error) {
+  console.error('Error:', error)
+} else {
+  console.log('Result:', data.result)
+}`}
+                    </pre>
+                  </div>
+
+                  {/* cURL Example */}
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Badge variant="outline">cURL</Badge>
+                    </h4>
+                    <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto">
+{`curl -X POST \\
+  'https://your-project.supabase.co/functions/v1/ai-spreadsheet' \\
+  -H 'Authorization: Bearer YOUR_API_KEY' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "prompt": "Analyze this data",
+    "data": [["Col1", "Col2"], ["A", 1]]
+  }'`}
+                    </pre>
+                  </div>
+
+                  {/* Python Example */}
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <Badge variant="outline">Python</Badge>
+                    </h4>
+                    <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto">
+{`import requests
+
+url = "https://your-project.supabase.co/functions/v1/ai-spreadsheet"
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+}
+payload = {
+    "prompt": "Analyze trends",
+    "data": [["Product", "Sales"], ["A", 100], ["B", 200]]
+}
+
+response = requests.post(url, json=payload, headers=headers)
+print(response.json())`}
+                    </pre>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Error Codes */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    Error Codes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-3 px-4 font-semibold">Code</th>
+                          <th className="text-left py-3 px-4 font-semibold">Message</th>
+                          <th className="text-left py-3 px-4 font-semibold">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-border">
+                          <td className="py-3 px-4"><Badge variant="destructive">400</Badge></td>
+                          <td className="py-3 px-4 font-mono text-xs">Bad Request</td>
+                          <td className="py-3 px-4 text-muted-foreground">Invalid request parameters</td>
+                        </tr>
+                        <tr className="border-b border-border">
+                          <td className="py-3 px-4"><Badge variant="destructive">401</Badge></td>
+                          <td className="py-3 px-4 font-mono text-xs">Unauthorized</td>
+                          <td className="py-3 px-4 text-muted-foreground">Missing or invalid API key</td>
+                        </tr>
+                        <tr className="border-b border-border">
+                          <td className="py-3 px-4"><Badge variant="destructive">402</Badge></td>
+                          <td className="py-3 px-4 font-mono text-xs">Payment Required</td>
+                          <td className="py-3 px-4 text-muted-foreground">Insufficient credits</td>
+                        </tr>
+                        <tr className="border-b border-border">
+                          <td className="py-3 px-4"><Badge variant="destructive">429</Badge></td>
+                          <td className="py-3 px-4 font-mono text-xs">Too Many Requests</td>
+                          <td className="py-3 px-4 text-muted-foreground">Rate limit exceeded</td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4"><Badge variant="destructive">500</Badge></td>
+                          <td className="py-3 px-4 font-mono text-xs">Internal Error</td>
+                          <td className="py-3 px-4 text-muted-foreground">Server-side error</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* SDKs */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    SDKs & Libraries
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="border border-border rounded-lg p-4">
+                      <h4 className="font-semibold mb-2">JavaScript/TypeScript</h4>
+                      <code className="bg-muted px-2 py-1 rounded text-sm block mb-2">
+                        npm install @supabase/supabase-js
+                      </code>
+                      <p className="text-sm text-muted-foreground">Official Supabase client for web and Node.js</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4">
+                      <h4 className="font-semibold mb-2">Python</h4>
+                      <code className="bg-muted px-2 py-1 rounded text-sm block mb-2">
+                        pip install supabase
+                      </code>
+                      <p className="text-sm text-muted-foreground">Python client for Supabase</p>
+                    </div>
+                    <div className="border border-border rounded-lg p-4">
+                      <h4 className="font-semibold mb-2">REST API</h4>
+                      <code className="bg-muted px-2 py-1 rounded text-sm block mb-2">
+                        curl / fetch / axios
+                      </code>
+                      <p className="text-sm text-muted-foreground">Use any HTTP client directly</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       <Footer />
